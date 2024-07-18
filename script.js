@@ -17,6 +17,10 @@ const winningConditions = [
     [2, 4, 6]
 ];
 
+function displayMessage(msg) {
+    message.innerText = msg;
+}
+
 function handleCellClick(event) {
     const clickedCell = event.target;
     const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
@@ -27,6 +31,7 @@ function handleCellClick(event) {
 
     gameState[clickedCellIndex] = currentPlayer;
     clickedCell.innerText = currentPlayer;
+    clickedCell.style.backgroundColor = currentPlayer === 'X' ? '#ff6347' : '#87cefa';
 
     checkForWinner();
 }
@@ -50,27 +55,43 @@ function checkForWinner() {
     }
 
     if (roundWon) {
-        message.innerText = `Player ${currentPlayer} wins!`;
+        displayMessage(`Player ${currentPlayer} wins!`);
         isGameActive = false;
+        triggerConfetti();
         return;
     }
 
     if (!gameState.includes('')) {
-        message.innerText = 'Game is a draw!';
+        displayMessage('Game is a draw!');
         isGameActive = false;
         return;
     }
 
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    displayMessage(`Now it's ${currentPlayer}'s turn`);
 }
 
 function resetGame() {
     currentPlayer = 'X';
     gameState = ['', '', '', '', '', '', '', '', ''];
     isGameActive = true;
-    message.innerText = '';
-    cells.forEach(cell => cell.innerText = '');
+    message.innerText = 'First hitter will be X';
+    cells.forEach(cell => {
+        cell.innerText = '';
+        cell.style.backgroundColor = '#61dafb';
+    });
 }
+
+function triggerConfetti() {
+    // Basic confetti effect using particles.js or a similar library
+    const confettiSettings = { target: 'confetti-canvas' };
+    const confetti = new ConfettiGenerator(confettiSettings);
+    confetti.render();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    displayMessage('First hitter will be X');
+});
 
 cells.forEach(cell => cell.addEventListener('click', handleCellClick));
 resetButton.addEventListener('click', resetGame);
